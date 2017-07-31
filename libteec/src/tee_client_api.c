@@ -40,6 +40,7 @@
 #include <tee_client_api.h>
 #include <teec_trace.h>
 #include <unistd.h>
+#include <assert.h>
 
 #ifndef __aligned
 #define __aligned(x) __attribute__((__aligned__(x)))
@@ -510,6 +511,9 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 
 	uuid_to_octets(arg->uuid, destination);
 	arg->clnt_login = connection_method;
+	/* Use address of operation structure as cancel ID. */
+	assert(sizeof(arg->cancel_id) == sizeof(uintptr_t));
+	arg->cancel_id = (uintptr_t)operation;
 
 	res = teec_pre_process_operation(ctx, operation, params, shm);
 	if (res != TEEC_SUCCESS) {
@@ -584,6 +588,9 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 
 	arg->session = session->session_id;
 	arg->func = cmd_id;
+	/* Use address of operation structure as cancel ID. */
+	assert(sizeof(arg->cancel_id) == sizeof(uintptr_t));
+	arg->cancel_id = (uintptr_t)operation;
 
 	if (operation) {
 		teec_mutex_lock(&teec_mutex);
@@ -635,7 +642,9 @@ void TEEC_RequestCancellation(TEEC_Operation *operation)
 		return;
 
 	arg.session = session->session_id;
-	arg.cancel_id = 0;
+	/* Address of operation structure is used as cancel ID. */
+	assert(sizeof(arg.cancel_id) == sizeof(uintptr_t));
+	arg.cancel_id = (uintptr_t)operation;
 
 	if (ioctl(session->ctx->fd, TEE_IOC_CANCEL, &arg))
 		EMSG("TEE_IOC_CANCEL: %s", strerror(errno));
