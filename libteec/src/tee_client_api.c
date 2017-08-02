@@ -52,6 +52,8 @@
 /* How many device sequence numbers will be tried before giving up */
 #define TEEC_MAX_DEV_SEQ	10
 
+#define TEEC_NULL_MEMREF (-1)
+
 static pthread_mutex_t teec_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void teec_mutex_lock(pthread_mutex_t *mu)
@@ -194,6 +196,9 @@ static TEEC_Result teec_pre_process_tmpref(TEEC_Context *ctx,
 	memcpy(shm->buffer, tmpref->buffer, tmpref->size);
 	param->u.memref.size = tmpref->size;
 	param->u.memref.shm_id = shm->id;
+	if (!tmpref->buffer && !tmpref->size)
+		param->u.memref.shm_offs = TEEC_NULL_MEMREF;
+
 	return TEEC_SUCCESS;
 }
 
