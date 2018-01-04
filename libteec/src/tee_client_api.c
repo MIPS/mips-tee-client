@@ -72,7 +72,7 @@ static int teec_open_dev(const char *devname, const char *capabilities,
 	struct tee_ioctl_version_data vers;
 	int fd;
 
-	fd = open(devname, O_RDWR);
+	fd = open(devname, O_RDWR | O_CLOEXEC);
 	if (fd < 0)
 		return -1;
 
