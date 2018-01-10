@@ -506,6 +506,13 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 		res = TEEC_ERROR_BAD_PARAMETERS;
 		goto out;
 	}
+	session->ctx = ctx;
+
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->session = session;
+		teec_mutex_unlock(&teec_mutex);
+	}
 
 	buf_data.buf_ptr = (uintptr_t)buf;
 	buf_data.buf_len = sizeof(buf);
@@ -535,10 +542,9 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 	}
 	res = arg->ret;
 	eorig = arg->ret_origin;
-	if (res == TEEC_SUCCESS) {
-		session->ctx = ctx;
+	if (res == TEEC_SUCCESS)
 		session->session_id = arg->session;
-	}
+
 	teec_post_process_operation(operation, params, shm);
 
 out_free_temp_refs:
@@ -582,7 +588,14 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 		goto out;
 	}
 
+
 	bm_timestamp();
+
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->session = session;
+		teec_mutex_unlock(&teec_mutex);
+	}
 
 	buf_data.buf_ptr = (uintptr_t)buf;
 	buf_data.buf_len = sizeof(buf);
@@ -596,12 +609,6 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 	/* Use address of operation structure as cancel ID. */
 	assert(sizeof(arg->cancel_id) == sizeof(uintptr_t));
 	arg->cancel_id = (uintptr_t)operation;
-
-	if (operation) {
-		teec_mutex_lock(&teec_mutex);
-		operation->session = session;
-		teec_mutex_unlock(&teec_mutex);
-	}
 
 	res = teec_pre_process_operation(session->ctx, operation, params, shm);
 	if (res != TEEC_SUCCESS) {
