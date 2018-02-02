@@ -384,7 +384,7 @@ typedef struct {
 
 /**
  * struct TEEC_Operation - Holds information and memory references used in
- * TEEC_InvokeCommand().
+ * TEEC_OpenSession() or TEEC_InvokeCommand().
  *
  * @param   started     Client must initialize to zero if it needs to cancel
  *                      an operation about to be performed.
@@ -392,8 +392,8 @@ typedef struct {
  *                      create the correct flags.
  *                      0 means TEEC_NONE is passed for all params.
  * @param   params      Array of parameters of type TEEC_Parameter.
- * @param   session     Internal pointer to the last session used by
- *                      TEEC_InvokeCommand with this operation.
+ * @param   session     Internal ptr to last session used by TEEC_OpenSession
+ *                      or TEEC_InvokeCommand with this operation.
  *
  */
 typedef struct {

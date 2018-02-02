@@ -501,18 +501,12 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 
 	(void)&connection_data;
 
-	if (!ctx || !session) {
+	if (!ctx || !session || (operation && (operation->started != 0))) {
 		eorig = TEEC_ORIGIN_API;
 		res = TEEC_ERROR_BAD_PARAMETERS;
 		goto out;
 	}
 	session->ctx = ctx;
-
-	if (operation) {
-		teec_mutex_lock(&teec_mutex);
-		operation->session = session;
-		teec_mutex_unlock(&teec_mutex);
-	}
 
 	buf_data.buf_ptr = (uintptr_t)buf;
 	buf_data.buf_len = sizeof(buf);
@@ -533,7 +527,19 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 		goto out_free_temp_refs;
 	}
 
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->session = session;
+		operation->started = 1;
+		teec_mutex_unlock(&teec_mutex);
+	}
 	rc = ioctl(ctx->fd, TEE_IOC_OPEN_SESSION, &buf_data);
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->started = 2;
+		operation->session = NULL;
+		teec_mutex_unlock(&teec_mutex);
+	}
 	if (rc) {
 		EMSG("TEE_IOC_OPEN_SESSION failed");
 		eorig = TEEC_ORIGIN_COMMS;
@@ -582,20 +588,14 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 	TEEC_SharedMemory shm[TEEC_CONFIG_PAYLOAD_REF_COUNT];
 	int rc;
 
-	if (!session || !session->ctx) {
+	if (!session || !session->ctx ||
+			(operation && (operation->started != 0))) {
 		eorig = TEEC_ORIGIN_API;
 		res = TEEC_ERROR_BAD_PARAMETERS;
 		goto out;
 	}
 
-
 	bm_timestamp();
-
-	if (operation) {
-		teec_mutex_lock(&teec_mutex);
-		operation->session = session;
-		teec_mutex_unlock(&teec_mutex);
-	}
 
 	buf_data.buf_ptr = (uintptr_t)buf;
 	buf_data.buf_len = sizeof(buf);
@@ -616,7 +616,19 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 		goto out_free_temp_refs;
 	}
 
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->session = session;
+		operation->started = 1;
+		teec_mutex_unlock(&teec_mutex);
+	}
 	rc = ioctl(session->ctx->fd, TEE_IOC_INVOKE, &buf_data);
+	if (operation) {
+		teec_mutex_lock(&teec_mutex);
+		operation->started = 2;
+		operation->session = NULL;
+		teec_mutex_unlock(&teec_mutex);
+	}
 	if (rc) {
 		EMSG("TEE_IOC_INVOKE failed");
 		eorig = TEEC_ORIGIN_COMMS;
@@ -642,16 +654,26 @@ void TEEC_RequestCancellation(TEEC_Operation *operation)
 {
 	struct tee_ioctl_cancel_arg arg;
 	TEEC_Session *session;
+	bool do_exit = false;
 
 	if (!operation)
 		return;
 
 	teec_mutex_lock(&teec_mutex);
-	session = operation->session;
+	if (operation->started == 2)
+		DMSG("Operation already completed");
+	if (operation->started == 0)
+		DMSG("Operation not yet started");
+	if (operation->started != 1)
+		do_exit = true;
+	if (!operation->session || !operation->session->ctx)
+		do_exit = true;
 	teec_mutex_unlock(&teec_mutex);
 
-	if (!session || !session->ctx)
+	if (do_exit)
 		return;
+
+	session = operation->session;
 
 	arg.session = session->session_id;
 	/* Address of operation structure is used as cancel ID. */
