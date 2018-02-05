@@ -649,6 +649,16 @@ out:
 	return res;
 }
 
+int TEEC_OperationStarted(TEEC_Operation *operation)
+{
+	return (*(volatile uint32_t *)&(operation->started) != 0);
+}
+
+int TEEC_OperationCompleted(TEEC_Operation *operation)
+{
+	return (*(volatile uint32_t *)&(operation->started) == 2);
+}
+
 void TEEC_RequestCancellation(TEEC_Operation *operation)
 {
 	struct tee_ioctl_cancel_arg arg;

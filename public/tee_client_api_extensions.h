@@ -50,6 +50,26 @@ TEEC_Result TEEC_RegisterSharedMemoryFileDescriptor(TEEC_Context *context,
 						    TEEC_SharedMemory *sharedMem,
 						    int fd);
 
+/**
+ * TEEC_OperationStarted() - Can be used to poll an operation to determine
+ * when to call TEEC_RequestCancellation().
+ *
+ * @param operation Pointer to an operation previously passed to open session
+ *                  or invoke.
+ * @return int      true when operation has been marked as started.
+ */
+int TEEC_OperationStarted(TEEC_Operation *operation);
+
+/**
+ * TEEC_OperationCompleted() - Can be used to poll an operation to determine
+ * when to call TEEC_RequestCancellation().
+ *
+ * @param operation Pointer to an operation previously passed to open session
+ *                  or invoke.
+ * @return bool     true when operation has been marked as completed.
+ */
+int TEEC_OperationCompleted(TEEC_Operation *operation);
+
 #ifdef __cplusplus
 }
 #endif
