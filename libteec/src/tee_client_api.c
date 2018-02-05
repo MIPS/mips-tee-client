@@ -501,7 +501,7 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *ctx, TEEC_Session *session,
 
 	(void)&connection_data;
 
-	if (!ctx || !session || (operation && (operation->started != 0))) {
+	if (!ctx || !session) {
 		eorig = TEEC_ORIGIN_API;
 		res = TEEC_ERROR_BAD_PARAMETERS;
 		goto out;
@@ -588,8 +588,7 @@ TEEC_Result TEEC_InvokeCommand(TEEC_Session *session, uint32_t cmd_id,
 	TEEC_SharedMemory shm[TEEC_CONFIG_PAYLOAD_REF_COUNT];
 	int rc;
 
-	if (!session || !session->ctx ||
-			(operation && (operation->started != 0))) {
+	if (!session || !session->ctx) {
 		eorig = TEEC_ORIGIN_API;
 		res = TEEC_ERROR_BAD_PARAMETERS;
 		goto out;
