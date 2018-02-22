@@ -29,8 +29,14 @@
 #ifndef TEE_CLIENT_API_H
 #define TEE_CLIENT_API_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
+#include <limits.h>
 
 /*
  * Defines the number of available memory references in an open session or
@@ -40,10 +46,11 @@
 
 /**
  * Defines the maximum size of a single shared memory block, in bytes, of both
- * API allocated and API registered memory. The size is currently set to
- * 512 * kB (512 * 1024).
+ * API allocated and API registered memory. There is no good value to put here
+ * (limits depend on specific config used), so this define does not provide any
+ * restriction in this implementation.
  */
-#define TEEC_CONFIG_SHAREDMEM_MAX_SIZE 0x8000
+#define TEEC_CONFIG_SHAREDMEM_MAX_SIZE ULONG_MAX
 
 /**
  * Flag constants indicating the type of parameters encoded inside the
@@ -247,6 +254,7 @@ typedef uint32_t TEEC_Result;
 typedef struct {
 	/* Implementation defined */
 	int fd;
+	bool reg_mem;
 } TEEC_Context;
 
 /**
@@ -288,6 +296,7 @@ typedef struct {
 	size_t alloced_size;
 	void *shadow_buffer;
 	int registered_fd;
+	bool buffer_allocated;
 } TEEC_SharedMemory;
 
 /**
@@ -532,5 +541,9 @@ void TEEC_ReleaseSharedMemory(TEEC_SharedMemory *sharedMemory);
  *                  or invoke.
  */
 void TEEC_RequestCancellation(TEEC_Operation *operation);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

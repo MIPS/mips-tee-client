@@ -9,6 +9,7 @@ LOCAL_CFLAGS += $(optee_CFLAGS)
 LOCAL_CFLAGS += -DDEBUGLEVEL_$(CFG_TEE_SUPP_LOG_LEVEL) \
                 -DBINARY_PREFIX=\"TEES\" \
                 -DTEEC_LOAD_PATH=\"$(CFG_TEE_CLIENT_LOAD_PATH)\" \
+		-DTEE_FS_PARENT_PATH=\"$(CFG_TEE_FS_PARENT_PATH)\"
 
 ifeq ($(CFG_TA_TEST_PATH),y)
 LOCAL_CFLAGS += -DCFG_TA_TEST_PATH=1
@@ -33,15 +34,6 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../public \
     $(LOCAL_PATH)/src
 
 LOCAL_SHARED_LIBRARIES := libteec
-
-ifeq ($(CFG_SQL_FS),y)
-LOCAL_SRC_FILES += src/sql_fs.c
-LOCAL_CFLAGS += -DCFG_SQL_FS
-LOCAL_CFLAGS += -Wno-strict-prototypes
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../libsqlfs/include \
-                    $(LOCAL_PATH)/../libsqlite3/include
-LOCAL_SHARED_LIBRARIES += libsqlfs
-endif
 
 ifeq ($(CFG_TA_GPROF_SUPPORT),y)
 LOCAL_SRC_FILES += src/gprof.c
