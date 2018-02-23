@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBTEEC
+	bool "libteec"
+	help
+	  GlobalPlatform Client API.
+	  Communications API for connecting Client Applications with
+	  security related Trusted Applications running inside a
+	  Trusted Execution Environment.

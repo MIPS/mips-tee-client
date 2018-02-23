@@ -1,5 +1,5 @@
 # Public variables are stored in config.mk
-include ./config.mk
+##include ./config.mk
 
 #########################################################################
 # Set Internal Variables						#
@@ -10,22 +10,25 @@ VPREFIX := @
 endif
 export VPREFIX
 
-EXPORT_DIR ?= $(O)/export
-DESTDIR ?= $(EXPORT_DIR)
-BINDIR ?= /bin
-LIBDIR ?= /lib
-INCLUDEDIR ?= /include
+##EXPORT_DIR ?= $(O)/export
+##DESTDIR ?= $(EXPORT_DIR)
+##BINDIR ?= /bin
+##LIBDIR ?= /lib
+##INCLUDEDIR ?= /include
 
 CFG_TA_GPROF_SUPPORT ?= n
 
-.PHONY: all build build-libteec install copy_export \
+
+##.PHONY: all build build-libteec install copy_export
+.PHONY: all build build-libteec \
 	clean cscope clean-cscope \
 	checkpatch-pre-req checkpatch-modified-patch checkpatch-modified-file \
 	checkpatch-last-commit-patch checkpatch-last-commit-file \
 	checkpatch-base-commit-patch checkpatch-base-commit-file \
 	checkpatch-all-files distclean
 
-all: build install
+##all: build install
+all: build
 
 build-libteec:
 	@echo "Building libteec.so"
@@ -39,7 +42,7 @@ build-tee-supplicant: build-libteec
 
 build: build-libteec build-tee-supplicant
 
-install: copy_export
+##install: copy_export
 
 clean: clean-libteec clean-tee-supplicant clean-cscope
 
@@ -123,9 +126,9 @@ checkpatch-all-files: checkpatch-pre-req
 
 distclean: clean
 
-copy_export: build
-	mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
-	cp -a ${O}/libteec/libteec.so* $(DESTDIR)$(LIBDIR)
-	cp -a ${O}/libteec/libteec.a $(DESTDIR)$(LIBDIR)
-	cp ${O}/tee-supplicant/tee-supplicant $(DESTDIR)$(BINDIR)
-	cp public/*.h $(DESTDIR)$(INCLUDEDIR)
+##copy_export: build
+##	mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
+##	cp -a ${O}/libteec/libteec.so* $(DESTDIR)$(LIBDIR)
+##	cp -a ${O}/libteec/libteec.a $(DESTDIR)$(LIBDIR)
+##	cp ${O}/tee-supplicant/tee-supplicant $(DESTDIR)$(BINDIR)
+##	cp public/*.h $(DESTDIR)$(INCLUDEDIR)

@@ -9,8 +9,8 @@ CFG_TEE_CLIENT_LOAD_PATH ?= /system/lib
 ################################################################################
 # Include optee-client common config and flags                                 #
 ################################################################################
-include $(LOCAL_PATH)/config.mk
-include $(LOCAL_PATH)/android_flags.mk
+#include $(LOCAL_PATH)/config.mk
+#include $(LOCAL_PATH)/android_flags.mk
 
 optee_CFLAGS = $(CFLAGS)
 
@@ -46,4 +46,4 @@ LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/public
 include $(BUILD_SHARED_LIBRARY)
 
 # TEE Supplicant
-include $(LOCAL_PATH)/tee-supplicant/tee_supplicant_android.mk
+#include $(LOCAL_PATH)/tee-supplicant/tee_supplicant_android.mk
