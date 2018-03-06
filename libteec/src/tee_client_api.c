@@ -91,6 +91,11 @@ static int teec_open_dev(const char *devname, const char *capabilities,
 				goto err;
 			if (!(vers.impl_caps & TEE_OPTEE_CAP_TZ))
 				goto err;
+		} else if (strcmp(capabilities, "mipstee-vz") == 0) {
+			if (vers.impl_id != TEE_IMPL_ID_MIPSTEE)
+				goto err;
+			if (!(vers.impl_caps & TEE_MIPSTEE_CAP_VZ))
+				goto err;
 		} else {
 			/* Unrecognized capability requested */
 			goto err;
