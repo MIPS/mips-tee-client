@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2017-2018, MIPS Tech, LLC and/or its affiliated group
+ * companies (“MIPS”).
  * Copyright (c) 2016, Linaro Limited
  * All rights reserved.
  *

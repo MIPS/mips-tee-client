@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) 2017-2018, MIPS Tech, LLC and/or its affiliated group
+ * companies (“MIPS”).
  * Copyright (c) 2014, STMicroelectronics International N.V.
  * All rights reserved.
  * Copyright (c) 2015, Linaro Limited
