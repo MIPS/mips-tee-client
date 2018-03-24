@@ -1,3 +1,19 @@
+# MIPS-TEE Client API
+The mips-tee-client repository belongs to the
+[MIPS-TEE](https://github.com/MIPS/mips-tee) project.  It is based on the
+optee-client git and maintains the same open-source license.
+
+Refer to the top level MIPS-TEE repository for installation instructions
+[README](https://github.com/MIPS/mips-tee/blob/master/README.md) and build
+instructions
+[HOWTO-ree](https://github.com/MIPS/mips-tee/blob/master/ree/HOWTO-ree.md).
+The build process differs from the one described in this file. It uses
+Buildroot's external package mechanism.
+
+Functionally, this implementation adds to a few GlobalPlatform features such as
+cancellation.  Some features such as the tee-supplicant and teec_benchmark are
+not supported.
+
 # OP-TEE Client API
 The optee-client git, containing the source code for the TEE client library in
 Linux. This component provides the TEE Client API as defined by the
